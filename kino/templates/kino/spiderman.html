@@ -1,0 +1,156 @@
+{% load static %}
+{% load embed_video_tags %}
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{% static 'assets/css/spiderman.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="{% static 'assets/images/icon.ico' %}" type="image/x-icon">
+    <title>{{ film.name }} | kino kör</title>
+    <script type="text/javascript">
+    document.ondragstart = noselect;
+    document.onselectstart = noselect;
+    document.oncontextmenu = noselect;
+    function noselect() {return false;}
+    </script>
+  </head>
+  <style>
+    .container1 {
+      border: 2px solid #ccc;
+      background-color: #eee;
+      border-radius: 5px;
+      padding: 16px;
+      margin: 16px 0
+    }
+    
+    .container1::after {
+      content: "";
+      clear: both;
+      display: table;
+    }
+    
+    .container1 img {
+      float: left;
+      margin-right: 20px;
+      border-radius: 50%;
+    }
+    
+    .container1 span {
+      font-size: 20px;
+      margin-right: 15px;
+    }
+    
+    @media (max-width: 500px) {
+      .container1 {
+          text-align: center;
+      }
+      .container1 img {
+          margin: auto;
+          float: none;
+          display: block;
+      }
+    }
+    </style>
+  <body>
+    <!-- Menu -->
+    <header class="header">
+      <div class="container">
+        <div class="header__inner">
+          <div class="header__logo">
+            <img src="{% static 'assets/images/logo.png' %}">
+          </div>
+          <nav>
+            <a class="nav__link" href="{% url 'main'%}">Movies</a>
+            <a class="nav__link" href="{% url 'news'%}">News</a>
+            <a class="nav__link" href="{% url 'feedback'%}">Feedback</a>
+            <a class="nav__link" href="{% url 'contacts'%}">Contacts</a>
+            {% if request.user.is_authenticated %}
+            <a class="nav__link" href="{% url 'logout' %}"><img src="{% static 'assets/images/logout.png' %}" class="nav__profile"></a>
+            {% else %}
+
+            <a class="nav__link" href="{% url 'register' %}"><img src="{% static 'assets/images/profile.png' %}" class="nav__profile"></a>
+            {% endif %}  
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <!-- Movie -->
+    <section class="movie">
+      <div class="container">
+        <div class="movie__title">{{ film.name }}</div>
+        <div class="movie__inner">
+          <div class="first_side">
+            <div class="movie__data">{{ film.genre }}<br>IMDB: {{film.raiting}}/10<br>Production: USA, 2021<br>
+              <br>{{ film.release_date}}<br>
+              Duration: {{ film.duration }} minutes
+            </div>
+            <div class="movie__description">{{ film.description}}
+            </div>
+            <a href="{% url 'session' pk=film.pk %}"><div class="buy__button">Buy a ticket</div></a>
+            <div class="line"></div>
+          </div>
+          <div class="second_side">
+            <img class="movie__img" src="{{ film.img.url }}">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reviews -->
+    <section class="reviews">
+      <div class="container">
+        <div class="reviews__inner">
+          <div class="first_side">
+            <div class="reviews__title">REVIEWS</div>
+            <div class="reviews__subtitle">The opinions of the authors
+               expressed by them in the reviews of the film may not coincide with the opinion of the editors of the site.</div>
+            <div class="reviews_input__inner">
+              
+            </div>
+            {% if request.user.is_authenticated %}
+            <form action="{% url 'review' pk=film.pk %}" method="get">
+              {% csrf_token %}
+              <div class="reviews__input_text">
+              <input type="text" name='text'>
+            </div>
+            <div ><button class="reviews__button" type="submit">Send</button></div>
+
+            </form>
+            {% else %}
+            <div class="reviews__title">Что бы оставить отзыв вы должны быть авторизованы </div>
+            {% endif %}
+          </div>
+          <div class="second_side">
+            {% video film.trailer 'tiny' %}
+            
+             
+          </div>
+        </div>
+      </div>
+    </section>
+    {% for review in reviews %}
+    <div class="container1">
+      
+      <p><span>{{ review.author.username }}</span> {{ review.text|linebreaksbr }} </p>
+      
+    </div>
+    {% endfor %}
+    <!-- Footer -->
+    <section class="footer">
+      <div class="container">
+        <div class="footer__inner">
+          <a href="#"><img class="sns" src="{% static 'assets/images/footer/facebook.png' %}"></a>
+          <a href="#"><img class="sns" src="{% static 'assets/images/footer/instagram.png' %}"></a>
+          <a href="#"><img class="sns" src="{% static 'assets/images/footer/linkedin.png' %}"></a>
+          <a href="#"><img class="sns" src="{% static 'assets/images/footer/twitter.png' %}"></a>
+          <a href="#"><img class="sns" src="{% static 'assets/images/footer/youtube.png' %}"></a>
+        </div>
+        <div class="footer__subtitle"><a href="#">© 2022 SU</a></div>
+      </div>
+    </section>
+
+  </body>
+</html>
