@@ -1,0 +1,3 @@
+Django
+Pillow
+django-embed_video
